@@ -11,7 +11,7 @@ const STRESS_DECREASE_RATE = 0.03;
 
 // --- Assets ---
 const bgImage = new Image();
-bgImage.src = new URL('./assets/background.png', import.meta.url).href;
+bgImage.src = './src/assets/background.png';
 
 // --- Game State ---
 let state = 'MENU'; // MENU, PLAYING, RESULTS
