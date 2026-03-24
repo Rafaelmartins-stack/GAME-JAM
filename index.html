@@ -497,25 +497,25 @@
         }
 
         const PATHS = [
-            // Superior-Esquerda para Inferior-Direita (Faixa de Baixo)
-            [{x: 250, y: -100}, {x: 1350, y: 560}], 
-            // Inferior-Direita para Superior-Esquerda (Faixa de Cima)
-            [{x: 1430, y: 500}, {x: 350, y: -100}],
-            // Inferior-Esquerda para Superior-Direita (Pista Principal)
-            [{x: -150, y: 920}, {x: 1430, y: 320}],
-            // Superior-Direita para Inferior-Esquerda
-            [{x: 1430, y: 260}, {x: -150, y: 860}]
+            // Superior-Esquerda para Inferior-Direita (Estrada de Cima)
+            [{x: -100, y: 220}, {x: 1100, y: 920}], 
+            // Inferior-Direita para Superior-Esquerda (Estrada de Baixo)
+            [{x: 1150, y: 920}, {x: -50, y: 220}],
+            // Inferior-Esquerda para Superior-Direita (Principal - Faixa de Baixo)
+            [{x: -150, y: 950}, {x: 1430, y: 400}],
+            // Superior-Direita para Inferior-Esquerda (Principal - Faixa de Cima)
+            [{x: 1430, y: 350}, {x: -150, y: 900}]
         ];
 
-        // Caminhos especiais para o evento de ponto cego (Caminhão virando)
+        // Caminhos especiais corrigidos
         const BLIND_SPOT_TRUCK_PATH = [
-            {x: 1430, y: 260}, 
-            {x: 600, y: 560}, 
-            {x: 1350, y: 900}
+            {x: 1430, y: 350}, 
+            {x: 650, y: 650}, 
+            {x: 1200, y: 1000}
         ];
         const BLIND_SPOT_BIKE_PATH = [
-            {x: 1430, y: 310}, 
-            {x: -150, y: 910}
+            {x: 1430, y: 410}, 
+            {x: -150, y: 960}
         ];
 
         function init() {
