@@ -402,9 +402,21 @@
             }
 
             getPointOnPath(t) {
-                const p1 = this.path[0];
-                const p2 = this.path[1];
-                return { x: p1.x + (p2.x - p1.x) * t, y: p1.y + (p2.y - p1.y) * t };
+                if (this.path.length === 2) {
+                    const p1 = this.path[0];
+                    const p2 = this.path[1];
+                    return { x: p1.x + (p2.x - p1.x) * t, y: p1.y + (p2.y - p1.y) * t };
+                }
+                
+                // Lógica para caminhos com múltiplos pontos (como o caminhão virando)
+                const segments = this.path.length - 1;
+                const scaledT = t * segments;
+                const idx = Math.min(Math.floor(scaledT), segments - 1);
+                const localT = scaledT - idx;
+                
+                const p1 = this.path[idx];
+                const p2 = this.path[idx + 1];
+                return { x: p1.x + (p2.x - p1.x) * localT, y: p1.y + (p2.y - p1.y) * localT };
             }
 
             draw() {
@@ -485,13 +497,26 @@
         }
 
         const PATHS = [
-            [{x: -150, y: 320}, {x: 1430, y: 320}],
-            [{x: 1430, y: 400}, {x: -150, y: 400}],
-            [{x: 620, y: -150}, {x: 620, y: 870}],
-            [{x: 700, y: 870}, {x: 700, y: -150}]
+            // Superior-Esquerda para Inferior-Direita (Faixa de Baixo)
+            [{x: 250, y: -100}, {x: 1350, y: 560}], 
+            // Inferior-Direita para Superior-Esquerda (Faixa de Cima)
+            [{x: 1430, y: 500}, {x: 350, y: -100}],
+            // Inferior-Esquerda para Superior-Direita (Pista Principal)
+            [{x: -150, y: 920}, {x: 1430, y: 320}],
+            // Superior-Direita para Inferior-Esquerda
+            [{x: 1430, y: 260}, {x: -150, y: 860}]
         ];
-        const BLIND_SPOT_TRUCK_PATH = [{x: -150, y: 320}, {x: 620, y: 320}, {x: 620, y: 870}];
-        const BLIND_SPOT_BIKE_PATH = [{x: -150, y: 360}, {x: 1430, y: 360}];
+
+        // Caminhos especiais para o evento de ponto cego (Caminhão virando)
+        const BLIND_SPOT_TRUCK_PATH = [
+            {x: 1430, y: 260}, 
+            {x: 600, y: 560}, 
+            {x: 1350, y: 900}
+        ];
+        const BLIND_SPOT_BIKE_PATH = [
+            {x: 1430, y: 310}, 
+            {x: -150, y: 910}
+        ];
 
         function init() {
             resize();
