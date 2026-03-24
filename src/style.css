@@ -1,0 +1,312 @@
+:root {
+  --primary-bg: #0f172a;
+  --panel-bg: rgba(30, 41, 59, 0.9);
+  --accent-blue: #38bdf8;
+  --accent-green: #10b981;
+  --accent-yellow: #f59e0b;
+  --accent-red: #ef4444;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--primary-bg);
+  color: var(--text-main);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+#game-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+canvas {
+  display: block;
+  background-color: #1a202c;
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+  cursor: crosshair;
+}
+
+#ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  backdrop-filter: blur(12px);
+  background-color: rgba(15, 23, 42, 0.7);
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.hidden {
+  opacity: 0;
+  pointer-events: none !important;
+  visibility: hidden;
+}
+
+.glass-panel {
+  background: var(--panel-bg);
+  padding: 3rem;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  max-width: 600px;
+  width: 90%;
+  animation: panelSlideIn 0.5s ease-out;
+}
+
+@keyframes panelSlideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text-main);
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.primary-btn {
+  display: block;
+  width: 100%;
+  padding: 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: white;
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1rem;
+}
+
+.primary-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.4);
+  filter: brightness(1.1);
+}
+
+.primary-btn:active {
+  transform: translateY(-1px);
+}
+
+.instructions {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.instruction {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.instruction p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.icon {
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* HUD STYLES */
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  transition: opacity 0.3s ease;
+}
+
+.hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: auto;
+}
+
+.hud-item {
+  background: var(--panel-bg);
+  padding: 1rem 1.75rem;
+  border-radius: 1.25rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.stress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 280px;
+}
+
+.stress-container span {
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.meter-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.meter-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, var(--accent-green), var(--accent-yellow), var(--accent-red));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+}
+
+.score-container {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.hud-bottom {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1rem;
+  pointer-events: auto;
+}
+
+#power-indicator {
+  background: var(--panel-bg);
+  padding: 0.75rem 2rem;
+  border-radius: 3rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+#current-power {
+  color: var(--accent-blue);
+  margin-left: 0.5rem;
+}
+
+.stats {
+  margin: 2rem 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.stats p {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.stats strong {
+  font-size: 2.25rem;
+  color: var(--accent-blue);
+}
+
+.educational-tip {
+  background: rgba(56, 189, 248, 0.08);
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  border-left: 6px solid var(--accent-blue);
+  margin: 2rem 0;
+}
+
+.educational-tip p {
+  color: var(--text-main);
+  margin: 0;
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.text-center {
+  text-align: center;
+}

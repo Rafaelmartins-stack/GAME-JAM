@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Traffic Safety Jam</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="game-container">
+      <canvas id="game-canvas"></canvas>
+      
+      <div id="ui-layer">
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen">
+          <div class="glass-panel">
+            <h1>🚦 Traffic Safety Jam</h1>
+            <p>Proteja as ruas, salve vidas. Gerencie o fluxo e intervenha em perigos iminentes.</p>
+            <button id="start-btn" class="primary-btn">Iniciar Turno</button>
+            <div class="instructions">
+              <div class="instruction">
+                <span class="icon">📱</span>
+                <p><strong>Foco:</strong> Clique em motoristas distraídos (ícone celular) para alertá-los.</p>
+              </div>
+              <div class="instruction">
+                <span class="icon">✏️</span>
+                <p><strong>Lentidão:</strong> Desenhe áreas na pista para forçar redução de velocidade.</p>
+              </div>
+              <div class="instruction">
+                <span class="icon">🚚</span>
+                <p><strong>Ponto Cego:</strong> Alerte caminhões virando sobre ciclistas.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD -->
+        <div id="hud" class="hidden">
+          <div class="hud-top">
+            <div class="hud-item stress-container">
+              <span>Stress da Cidade:</span>
+              <div class="meter-bar">
+                <div id="stress-fill" class="meter-fill"></div>
+              </div>
+            </div>
+            <div class="hud-item score-container">
+              <span>🛡️ Vidas Salvas: <strong id="score-val">0</strong></span>
+            </div>
+          </div>
+          <div class="hud-bottom">
+            <div id="power-indicator">Poder Ativo: <span id="current-power">Seleção</span></div>
+          </div>
+        </div>
+
+        <!-- Game Over / Results -->
+        <div id="results-screen" class="screen hidden">
+          <div class="glass-panel text-center">
+            <h2 id="result-title">Turno Encerrado</h2>
+            <div class="stats">
+              <p>Acidentes evitados: <strong id="final-saves">0</strong></p>
+              <p>Média de segurança: <strong id="safety-percent">0%</strong></p>
+            </div>
+            <div class="educational-tip">
+              <p id="fact-text"></p>
+            </div>
+            <button id="restart-btn" class="primary-btn">Tentar Novamente</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
