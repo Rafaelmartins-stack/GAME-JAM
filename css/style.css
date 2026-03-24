@@ -3,7 +3,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #0f172a;
+    background-color: #2c1e14; /* Dark Wood */
     color: #f8fafc;
     font-family: 'Outfit', sans-serif;
     overflow: hidden;
@@ -15,10 +15,10 @@ body {
 
 #game-container {
     position: relative;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border-radius: 12px;
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.8);
+    border-radius: 4px; /* Pixel art style uses sharp corners usually, but slight rounding is fine */
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 8px solid #5d4037; /* Wood border */
 }
 
 /* Presidential HUD Overlay */
@@ -34,15 +34,14 @@ body {
 }
 
 .hud-panel {
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(12px);
+    background: rgba(109, 76, 65, 0.9); /* Brown Wood Panels */
     padding: 15px 25px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 3px solid #3e2723;
     display: flex;
     gap: 20px;
     align-items: center;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     pointer-events: auto;
 }
 
@@ -55,14 +54,15 @@ body {
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #94a3b8;
+    color: #d7ccc8;
     font-weight: 700;
 }
 
 .stat-value {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #f1f5f9;
+    color: #fff;
+    text-shadow: 2px 2px #000;
 }
 
 #controls {
@@ -76,41 +76,25 @@ body {
 }
 
 .btn {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    background: linear-gradient(180deg, #8bc34a 0%, #689f38 100%); /* Green Button */
     color: white;
-    border: none;
+    border: 3px solid #33691e;
     padding: 12px 24px;
-    border-radius: 12px;
+    border-radius: 4px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
+    transform: scale(1.05);
     filter: brightness(1.1);
 }
 
 .btn:active {
-    transform: translateY(0);
-}
-
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95);
 }
 
 #announcement {
@@ -118,14 +102,26 @@ body {
     top: 100px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(46, 125, 50, 0.9);
     padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 4px;
+    font-size: 1rem;
     opacity: 0;
     transition: opacity 0.5s;
     pointer-events: none;
-    border: 1px solid #3b82f6;
-    color: #60a5fa;
+    border: 2px solid #1b5e20;
+    color: #fff;
     z-index: 20;
+    font-weight: bold;
+    text-shadow: 1px 1px #000;
+}
+
+#tooltip {
+    background: rgba(141, 110, 99, 0.95);
+    padding: 12px 20px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 0.8rem;
+    border: 2px solid #5d4037;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
