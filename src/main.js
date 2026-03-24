@@ -1,4 +1,4 @@
-import './style.css'
+// import './style.css'
 
 // --- Configuration & Constants ---
 const CANVAS_WIDTH = 1280;
