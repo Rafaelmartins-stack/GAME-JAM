@@ -411,25 +411,75 @@
                 ctx.save();
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.angle);
-                ctx.fillStyle = 'rgba(0,0,0,0.2)';
-                ctx.fillRect(-this.width/2 + 2, -this.height/2 + 2, this.width, this.height);
-                ctx.fillStyle = this.isDistracted ? '#fde047' : this.color;
-                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+
+                // Sombras
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.fillRect(-this.width / 2 + 4, -this.height / 2 + 4, this.width, this.height);
+
+                if (this.type === 'truck') {
+                    // Cabine do Caminhão
+                    ctx.fillStyle = '#334155'; 
+                    ctx.fillRect(this.width / 4, -this.height / 2, this.width / 4, this.height);
+                    // Baú do Caminhão
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(-this.width / 2, -this.height / 2, this.width * 0.7, this.height);
+                    // Rodas (6 rodas para caminhão)
+                    ctx.fillStyle = '#000';
+                    [-this.width/3, 0, this.width/4].forEach(off => {
+                        ctx.fillRect(off, -this.height/2 - 4, 12, 6);
+                        ctx.fillRect(off, this.height/2 - 2, 12, 6);
+                    });
+                } else if (this.type === 'bike') {
+                    // Bicicleta / Ciclista
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(-this.width/2, -2, this.width, 4); // Quadro
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 8, 0, Math.PI * 2); // Ciclista
+                    ctx.fill();
+                } else {
+                    // Carro Moderno
+                    ctx.fillStyle = this.color;
+                    if (this.isDistracted) ctx.fillStyle = '#fde047'; // Amarelo para perigo
+                    
+                    // Corpo arredondado (retângulo com bordas no desenho)
+                    ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+                    
+                    // Vidros
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.fillRect(-this.width / 4, -this.height / 2 + 4, this.width / 2, this.height - 8);
+                    
+                    // Rodas
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(-this.width / 3, -this.height / 2 - 4, 12, 6);
+                    ctx.fillRect(this.width / 6, -this.height / 2 - 4, 12, 6);
+                    ctx.fillRect(-this.width / 3, this.height / 2 - 2, 12, 6);
+                    ctx.fillRect(this.width / 6, this.height / 2 - 2, 12, 6);
+                    
+                    // Faróis
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(this.width / 2 - 4, -this.height / 2 + 2, 4, 6);
+                    ctx.fillRect(this.width / 2 - 4, this.height / 2 - 8, 4, 6);
+                }
+
                 ctx.restore();
 
+                // Alertas visuais flutuantes
                 if (this.isDistracted) {
                     ctx.font = '32px Arial';
                     ctx.textAlign = 'center';
-                    ctx.fillText('📱', this.x, this.y - 45);
+                    ctx.fillText('📱', this.x, this.y - 50);
                 }
                 if (this.inConflict && !this.alertActive) {
                     ctx.font = '32px Arial';
-                    ctx.fillText('👀❓', this.x, this.y - 45);
+                    ctx.textAlign = 'center';
+                    ctx.fillText('👀⚠️', this.x, this.y - 50);
                 }
                 if (this.alertActive) {
                     ctx.fillStyle = '#10b981';
                     ctx.font = 'bold 20px Outfit';
-                    ctx.fillText('PARADO', this.x, this.y - 45);
+                    ctx.textAlign = 'center';
+                    ctx.fillText('🛑 ALERTA!', this.x, this.y - 50);
                 }
             }
         }
@@ -509,6 +559,10 @@
                         spawnEffect(x, y, '🛑 PARADO!');
                         score += 10;
                         setTimeout(() => { v.alertActive = false; v.inConflict = false; v.isBraking = false; }, 3000);
+                    } else {
+                        // Clique em veículo comum
+                        clickedSpecial = true;
+                        spawnEffect(x, y, '🔊 BIBI!');
                     }
                 }
             });
