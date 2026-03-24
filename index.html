@@ -1,77 +1,623 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traffic Safety Jam</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./src/style.css">
-  </head>
-  <body>
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --panel-bg: rgba(30, 41, 59, 0.9);
+            --accent-blue: #38bdf8;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-family: 'Outfit', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            background-color: #1a202c;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            cursor: crosshair;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            backdrop-filter: blur(12px);
+            background-color: rgba(15, 23, 42, 0.7);
+            transition: opacity 0.4s ease;
+            z-index: 100;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            padding: 3rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            max-width: 600px;
+            width: 90%;
+            animation: panelSlideIn 0.5s ease-out;
+        }
+
+        @keyframes panelSlideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .primary-btn {
+            display: block;
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: white;
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            border: none;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 1rem;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.4);
+        }
+
+        .instructions {
+            margin-top: 2rem;
+            display: grid;
+            gap: 1.25rem;
+        }
+
+        .instruction {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .icon-box {
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+        }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            pointer-events: auto;
+        }
+
+        .hud-item {
+            background: var(--panel-bg);
+            padding: 1rem 1.75rem;
+            border-radius: 1.25rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .meter-bar {
+            width: 200px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--accent-green), var(--accent-yellow), var(--accent-red));
+            transition: width 0.4s ease;
+        }
+
+        .stats {
+            margin: 2rem 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .educational-tip {
+            background: rgba(56, 189, 248, 0.08);
+            padding: 1.75rem;
+            border-radius: 1.5rem;
+            border-left: 6px solid var(--accent-blue);
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        #current-power-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--panel-bg);
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
     <div id="game-container">
-      <canvas id="game-canvas"></canvas>
-      
-      <div id="ui-layer">
-        <!-- Main Menu -->
-        <div id="main-menu" class="screen">
-          <div class="glass-panel">
-            <h1>🚦 Traffic Safety Jam</h1>
-            <p>Proteja as ruas, salve vidas. Gerencie o fluxo e intervenha em perigos iminentes.</p>
-            <button id="start-btn" class="primary-btn">Iniciar Turno</button>
-            <div class="instructions">
-              <div class="instruction">
-                <span class="icon">📱</span>
-                <p><strong>Foco:</strong> Clique em motoristas distraídos (ícone celular) para alertá-los.</p>
-              </div>
-              <div class="instruction">
-                <span class="icon">✏️</span>
-                <p><strong>Lentidão:</strong> Desenhe áreas na pista para forçar redução de velocidade.</p>
-              </div>
-              <div class="instruction">
-                <span class="icon">🚚</span>
-                <p><strong>Ponto Cego:</strong> Alerte caminhões virando sobre ciclistas.</p>
-              </div>
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="ui-layer">
+            <div id="main-menu" class="screen">
+                <div class="glass-panel">
+                    <h1>🚦 Traffic Safety Jam</h1>
+                    <p>Proteja as ruas, salve vidas. Gerencie o fluxo e intervenha em perigos iminentes.</p>
+                    <button id="start-btn" class="primary-btn">Iniciar Turno</button>
+                    <div class="instructions">
+                        <div class="instruction">
+                            <span class="icon-box">📱</span>
+                            <p><strong>Foco:</strong> Clique em motoristas distraídos (ícone celular).</p>
+                        </div>
+                        <div class="instruction">
+                            <span class="icon-box">✏️</span>
+                            <p><strong>Lentidão:</strong> Desenhe áreas na pista para frear carros.</p>
+                        </div>
+                        <div class="instruction">
+                            <span class="icon-box">🚚</span>
+                            <p><strong>Ponto Cego:</strong> Clique em caminhões para evitar colisões.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- HUD -->
-        <div id="hud" class="hidden">
-          <div class="hud-top">
-            <div class="hud-item stress-container">
-              <span>Stress da Cidade:</span>
-              <div class="meter-bar">
-                <div id="stress-fill" class="meter-fill"></div>
-              </div>
+            <div id="hud" class="hidden">
+                <div class="hud-top">
+                    <div class="hud-item stress-container">
+                        <span>Stress da Cidade:</span>
+                        <div class="meter-bar"><div id="stress-fill" class="meter-fill"></div></div>
+                    </div>
+                    <div class="hud-item score-container">
+                        <span>🛡️ Vidas Salvas: <strong id="score-val">0</strong></span>
+                    </div>
+                </div>
+                <div id="current-power-indicator">Poder: <span id="current-power" style="color:var(--accent-blue)">Seleção</span></div>
             </div>
-            <div class="hud-item score-container">
-              <span>🛡️ Vidas Salvas: <strong id="score-val">0</strong></span>
-            </div>
-          </div>
-          <div class="hud-bottom">
-            <div id="power-indicator">Poder Ativo: <span id="current-power">Seleção</span></div>
-          </div>
-        </div>
 
-        <!-- Game Over / Results -->
-        <div id="results-screen" class="screen hidden">
-          <div class="glass-panel text-center">
-            <h2 id="result-title">Turno Encerrado</h2>
-            <div class="stats">
-              <p>Acidentes evitados: <strong id="final-saves">0</strong></p>
-              <p>Média de segurança: <strong id="safety-percent">0%</strong></p>
+            <div id="results-screen" class="screen hidden">
+                <div class="glass-panel" style="text-align: center;">
+                    <h2>Turno Encerrado</h2>
+                    <div class="stats">
+                        <div class="hud-item">
+                            <p>Evitados</p>
+                            <strong id="final-saves" style="font-size: 2rem; color: var(--accent-blue);">0</strong>
+                        </div>
+                        <div class="hud-item">
+                            <p>Segurança</p>
+                            <strong id="safety-percent" style="font-size: 2rem; color: var(--accent-green);">0%</strong>
+                        </div>
+                    </div>
+                    <div class="educational-tip">
+                        <p id="fact-text"></p>
+                    </div>
+                    <button id="restart-btn" class="primary-btn">Tentar Novamente</button>
+                </div>
             </div>
-            <div class="educational-tip">
-              <p id="fact-text"></p>
-            </div>
-            <button id="restart-btn" class="primary-btn">Tentar Novamente</button>
-          </div>
         </div>
-      </div>
     </div>
-    <script type="module" src="./src/main.js"></script>
-  </body>
+
+    <script>
+        // --- Configuration & Constants ---
+        const CANVAS_WIDTH = 1280;
+        const CANVAS_HEIGHT = 720;
+        const SPAWN_INTERVAL = 4000;
+        const EVENT_INTERVAL = 12000;
+        const MAX_STRESS = 100;
+        const STRESS_INCREASE_RATE = 0.08;
+        const STRESS_DECREASE_RATE = 0.03;
+
+        // --- Assets ---
+        const bgImage = new Image();
+        bgImage.src = './src/assets/background.png';
+
+        // --- Game State ---
+        let state = 'MENU';
+        let score = 0;
+        let stress = 0;
+        let lastSpawnTime = 0;
+        let lastEventTime = 0;
+        let vehicles = [];
+        let pedestrians = [];
+        let effects = [];
+        let slowZones = [];
+        let isDrawingZone = false;
+        let currentZoneStart = null;
+        let currentDragPos = null;
+
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+
+        const screens = {
+            menu: document.getElementById('main-menu'),
+            hud: document.getElementById('hud'),
+            results: document.getElementById('results-screen')
+        };
+
+        const ui = {
+            score: document.getElementById('score-val'),
+            stressFill: document.getElementById('stress-fill'),
+            finalSaves: document.getElementById('final-saves'),
+            safetyPercent: document.getElementById('safety-percent'),
+            factText: document.getElementById('fact-text')
+        };
+
+        class Vehicle {
+            constructor(type, path) {
+                this.type = type;
+                this.path = path;
+                this.progress = 0;
+                this.speed = type === 'bike' ? 0.0008 : 0.0012;
+                this.baseSpeed = this.speed;
+                this.isDistracted = type !== 'bike' && Math.random() < 0.25;
+                this.isBraking = false;
+                this.width = type === 'truck' ? 90 : (type === 'bike' ? 30 : 55);
+                this.height = type === 'truck' ? 45 : (type === 'bike' ? 15 : 28);
+                this.color = this.getRandomColor();
+                this.alertActive = false;
+                this.inConflict = false;
+                this.x = 0;
+                this.y = 0;
+                this.angle = 0;
+                this.remove = false;
+            }
+
+            getRandomColor() {
+                if (this.type === 'bike') return '#34d399';
+                const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                let inSlowZone = false;
+                slowZones.forEach(zone => {
+                    if (this.x > zone.x && this.x < zone.x + zone.w && this.y > zone.y && this.y < zone.y + zone.h) {
+                        inSlowZone = true;
+                    }
+                });
+
+                const targetSpeed = inSlowZone ? this.baseSpeed * 0.3 : this.baseSpeed;
+                this.speed = this.isDistracted ? targetSpeed * 1.5 : targetSpeed;
+                if (stress > 80) this.speed *= 1.35;
+                if (this.alertActive) this.isBraking = true;
+                if (this.isBraking) this.speed = 0;
+
+                this.progress += this.speed;
+                const point = this.getPointOnPath(this.progress);
+                const nextPoint = this.getPointOnPath(this.progress + 0.01);
+                this.x = point.x;
+                this.y = point.y;
+                this.angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x);
+
+                if (this.progress >= 1) {
+                    this.remove = true;
+                    score++;
+                }
+            }
+
+            getPointOnPath(t) {
+                const p1 = this.path[0];
+                const p2 = this.path[1];
+                return { x: p1.x + (p2.x - p1.x) * t, y: p1.y + (p2.y - p1.y) * t };
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.fillRect(-this.width/2 + 2, -this.height/2 + 2, this.width, this.height);
+                ctx.fillStyle = this.isDistracted ? '#fde047' : this.color;
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                ctx.restore();
+
+                if (this.isDistracted) {
+                    ctx.font = '32px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('📱', this.x, this.y - 45);
+                }
+                if (this.inConflict && !this.alertActive) {
+                    ctx.font = '32px Arial';
+                    ctx.fillText('👀❓', this.x, this.y - 45);
+                }
+                if (this.alertActive) {
+                    ctx.fillStyle = '#10b981';
+                    ctx.font = 'bold 20px Outfit';
+                    ctx.fillText('PARADO', this.x, this.y - 45);
+                }
+            }
+        }
+
+        const PATHS = [
+            [{x: -150, y: 320}, {x: 1430, y: 320}],
+            [{x: 1430, y: 400}, {x: -150, y: 400}],
+            [{x: 620, y: -150}, {x: 620, y: 870}],
+            [{x: 700, y: 870}, {x: 700, y: -150}]
+        ];
+        const BLIND_SPOT_TRUCK_PATH = [{x: -150, y: 320}, {x: 620, y: 320}, {x: 620, y: 870}];
+        const BLIND_SPOT_BIKE_PATH = [{x: -150, y: 360}, {x: 1430, y: 360}];
+
+        function init() {
+            resize();
+            window.addEventListener('resize', resize);
+            document.getElementById('start-btn').onclick = startLevel;
+            document.getElementById('restart-btn').onclick = () => {
+                state = 'MENU';
+                showScreen('menu');
+            };
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resize() {
+            const container = document.getElementById('game-container');
+            const ratio = CANVAS_WIDTH / CANVAS_HEIGHT;
+            let w = container.clientWidth;
+            let h = container.clientHeight;
+            if (w / h > ratio) w = h * ratio; else h = w / ratio;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+        }
+
+        function startLevel() {
+            state = 'PLAYING';
+            score = 0;
+            stress = 0;
+            vehicles = [];
+            pedestrians = [];
+            slowZones = [];
+            lastSpawnTime = Date.now();
+            lastEventTime = Date.now();
+            showScreen('hud');
+        }
+
+        function showScreen(key) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            if (screens[key]) screens[key].classList.remove('hidden');
+        }
+
+        function handleMouseDown(e) {
+            if (state !== 'PLAYING') return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = CANVAS_WIDTH / rect.width;
+            const scaleY = CANVAS_HEIGHT / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            let clickedSpecial = false;
+            vehicles.forEach(v => {
+                const dist = Math.hypot(v.x - x, v.y - y);
+                if (dist < 60) {
+                    if (v.isDistracted) {
+                        v.isDistracted = false;
+                        clickedSpecial = true;
+                        spawnEffect(x, y, '✅ FOCO!');
+                        score += 5;
+                    } else if (v.inConflict && !v.alertActive) {
+                        v.alertActive = true;
+                        clickedSpecial = true;
+                        spawnEffect(x, y, '🛑 PARADO!');
+                        score += 10;
+                        setTimeout(() => { v.alertActive = false; v.inConflict = false; v.isBraking = false; }, 3000);
+                    }
+                }
+            });
+
+            if (!clickedSpecial) {
+                isDrawingZone = true;
+                currentZoneStart = {x, y};
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!isDrawingZone) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = CANVAS_WIDTH / rect.width;
+            const scaleY = CANVAS_HEIGHT / rect.height;
+            currentDragPos = { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+        }
+
+        function handleMouseUp() {
+            if (isDrawingZone && currentDragPos) {
+                const x = Math.min(currentZoneStart.x, currentDragPos.x);
+                const y = Math.min(currentZoneStart.y, currentDragPos.y);
+                const w = Math.abs(currentZoneStart.x - currentDragPos.x);
+                const h = Math.abs(currentZoneStart.y - currentDragPos.y);
+                if (w > 20 && h > 20) {
+                    slowZones.push({x, y, w, h, life: 500});
+                    stress += 10;
+                }
+            }
+            isDrawingZone = false;
+            currentZoneStart = null;
+            currentDragPos = null;
+        }
+
+        function spawnEffect(x, y, text) {
+            effects.push({x, y, text, life: 60, opacity: 1});
+        }
+
+        function update() {
+            if (state !== 'PLAYING') return;
+            if (Date.now() - lastSpawnTime > SPAWN_INTERVAL) {
+                const pathIdx = Math.floor(Math.random() * PATHS.length);
+                vehicles.push(new Vehicle(Math.random() < 0.15 ? 'truck' : 'car', PATHS[pathIdx]));
+                lastSpawnTime = Date.now();
+            }
+            if (Date.now() - lastEventTime > EVENT_INTERVAL) {
+                if (Math.random() < 0.5) {
+                    const truck = new Vehicle('truck', BLIND_SPOT_TRUCK_PATH);
+                    truck.inConflict = true; truck.speed = 0.0006;
+                    const bike = new Vehicle('bike', BLIND_SPOT_BIKE_PATH);
+                    bike.speed = 0.001;
+                    vehicles.push(truck, bike);
+                    spawnEffect(100, 320, '⚠️ PONTO CEGO!');
+                }
+                lastEventTime = Date.now();
+            }
+            checkCollisions();
+            vehicles.forEach(v => v.update());
+            vehicles = vehicles.filter(v => !v.remove);
+            slowZones.forEach(z => z.life--);
+            slowZones = slowZones.filter(z => z.life > 0);
+            effects.forEach(e => { e.y -= 1; e.opacity -= 0.02; e.life--; });
+            effects = effects.filter(e => e.life > 0);
+            stress = Math.max(0, Math.min(100, stress + (slowZones.length * STRESS_INCREASE_RATE) - STRESS_DECREASE_RATE));
+            if (stress >= MAX_STRESS) endGame();
+            ui.score.innerText = score;
+            ui.stressFill.style.width = stress + '%';
+        }
+
+        function checkCollisions() {
+            for (let i = 0; i < vehicles.length; i++) {
+                for (let j = i + 1; j < vehicles.length; j++) {
+                    const v1 = vehicles[i], v2 = vehicles[j];
+                    if (Math.hypot(v1.x - v2.x, v1.y - v2.y) < 40 && !v1.alertActive && !v2.alertActive) {
+                        if (v1.inConflict || v2.inConflict || v1.isDistracted || v2.isDistracted) {
+                            stress += 25; spawnEffect((v1.x + v2.x)/2, (v1.y + v2.y)/2, '💥 ACIDENTE!');
+                            v1.remove = true; v2.remove = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        function endGame() {
+            state = 'RESULTS';
+            showScreen('results');
+            ui.finalSaves.innerText = score;
+            ui.safetyPercent.innerText = Math.max(0, 100 - (stress/2)).toFixed(0) + '%';
+            const tips = ["2 segundos no celular aumentam o risco de colisão em 400%.", "Manter a calma no trânsito reduz acidentes em 30%."];
+            ui.factText.innerText = tips[Math.floor(Math.random() * tips.length)];
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            if (bgImage.complete) ctx.drawImage(bgImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            else { ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); }
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.2)'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+            slowZones.forEach(z => { ctx.fillRect(z.x, z.y, z.w, z.h); ctx.strokeRect(z.x, z.y, z.w, z.h); });
+            if (isDrawingZone && currentDragPos) {
+                const x = Math.min(currentZoneStart.x, currentDragPos.x), y = Math.min(currentZoneStart.y, currentDragPos.y);
+                const w = Math.abs(currentZoneStart.x - currentDragPos.x), h = Math.abs(currentZoneStart.y - currentDragPos.y);
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.4)'; ctx.fillRect(x, y, w, h);
+            }
+            vehicles.forEach(v => v.draw());
+            effects.forEach(e => { ctx.globalAlpha = e.opacity; ctx.fillStyle = '#fff'; ctx.font = 'bold 20px Outfit'; ctx.textAlign = 'center'; ctx.fillText(e.text, e.x, e.y); ctx.globalAlpha = 1; });
+        }
+
+        function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
+        init();
+    </script>
+</body>
 </html>
